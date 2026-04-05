@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
-import { Shield, Globe, DollarSign, Package } from "lucide-react";
+import { Shield, Globe, DollarSign, Package, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -15,7 +15,9 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { AgentProgress } from "@/components/agent-progress/AgentProgress";
+import Link from "next/link";
 import { getStreamUrl } from "@/lib/api";
+import { getSessionId } from "@/lib/session";
 import type { SseEvent } from "@/lib/types";
 
 const COUNTRIES = [
@@ -61,6 +63,7 @@ export default function AnalyzePage() {
           description,
           originCountry: country,
           cifValue: parseFloat(cifValue),
+          sessionId: getSessionId(),
         }),
       });
 
@@ -115,6 +118,13 @@ export default function AnalyzePage() {
       <div className="bg-[#1E3A5F] text-white px-8 py-4 flex items-center gap-3">
         <Shield className="w-5 h-5" />
         <span className="font-bold text-lg">TariffPilot AI</span>
+        <Link
+          href="/history"
+          className="ml-auto text-sm text-blue-300 hover:text-white flex items-center gap-1"
+        >
+          <Clock className="w-4 h-4" />
+          History
+        </Link>
       </div>
 
       <div className="max-w-3xl mx-auto px-6 py-12">
