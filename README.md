@@ -6,6 +6,58 @@ Built with GLM 5.1 (via Z.AI), NestJS, Next.js 16, and PostgreSQL.
 
 ---
 
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        Next.js Frontend                        │
+│              Landing → Analyze → Results → History              │
+│                    (SSE progress streaming)                     │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │ POST /analysis/stream (SSE)
+                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      NestJS Backend API                         │
+│                                                                 │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │              Agent Orchestrator (5-Step Chain)            │   │
+│  │                                                          │   │
+│  │  Step 1: HTS Classification ──► hts_lookup tool ──► DB   │   │
+│  │      │                                                    │   │
+│  │  Step 2: Duty Calculation ────► section301_check tool     │   │
+│  │      │                                                    │   │
+│  │  Step 3: FTA Screening ───────► fta_database tool   ─┐   │   │
+│  │  Step 4: Country Comparison ──► country_compare tool ─┤   │   │
+│  │      │                              (parallel)        │   │   │
+│  │  Step 5: Report Generation ◄──────────────────────────┘   │   │
+│  └──────────────┬───────────────────────────────────────────┘   │
+│                 │                                                │
+│    ┌────────────▼────────────┐    ┌──────────────────────┐      │
+│    │   GLM 5.1 via Z.AI     │    │    PostgreSQL DB      │      │
+│    │   (OpenAI-compatible)   │    │  HTS codes, analyses │      │
+│    │   - Tool calling        │    │  AD/CVD orders       │      │
+│    │   - Multi-step reasoning│    └──────────────────────┘      │
+│    └─────────────────────────┘                                   │
+│                                                                  │
+│    ┌─────────────────────────────────────────────┐               │
+│    │          Report Export Service               │               │
+│    │    PDF (pdfmake)  ·  Excel (exceljs)        │               │
+│    └─────────────────────────────────────────────┘               │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+## Why GLM 5.1
+
+TariffPilot is built entirely around GLM 5.1's strengths in **long-horizon reasoning**, **tool use**, and **multi-step agent workflows** — the exact capabilities this model was optimized for.
+
+**Multi-step agentic chain.** Each analysis runs a 5-step agent pipeline where GLM 5.1 acts as the reasoning engine at every stage. This isn't a single API call — it's a full agentic loop where the model decides which tools to call, interprets their results, and iterates up to 10 times per step before producing a final answer. Steps 3 and 4 run in parallel, demonstrating concurrent agent execution.
+
+**Tool use with real data.** GLM 5.1 drives 4 custom function-calling tools that query a PostgreSQL database of US HTS codes, Section 301 tariff lists, FTA partner rates, and country-specific duty calculations. The model autonomously decides when and how to use each tool based on the product being analyzed — for example, only calling `section301_check` for China-origin goods, or searching multiple HTS chapters when the first lookup returns no matches.
+
+**Long-horizon reasoning for trade compliance.** Tariff classification requires applying GRI (General Rules of Interpretation) — a hierarchical legal framework where each rule depends on the previous one. GLM 5.1's long-context reasoning handles this naturally, maintaining coherence across the full classification → duty calculation → FTA screening → country comparison → report generation chain. The model carries forward context from earlier steps (like the HTS code and MFN rate) to inform later calculations without losing accuracy.
+
+**Structured output generation.** Every step requires the model to produce precise JSON with specific fields (rates as decimals, amounts in dollars, legal citations). GLM 5.1 reliably generates valid structured output even for complex nested objects like the 5-layer duty stack.
+
 ## Features
 
 - **HTS Classification** — Natural language product descriptions classified to 10-digit HTS codes using GRI rules
