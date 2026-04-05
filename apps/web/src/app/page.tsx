@@ -1,65 +1,130 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { motion } from "motion/react";
+import { useRouter } from "next/navigation";
+import { ArrowRight, Shield, Zap, Globe2, TrendingDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+const STATS = [
+  { label: "US SMB importers underserved", value: "191,000+" },
+  { label: "Average penalty for misclassification", value: "$35K" },
+  { label: "Manual classification time", value: "90 min" },
+  { label: "TariffPilot time", value: "< 60s" },
+];
+
+const FEATURES = [
+  {
+    icon: Zap,
+    title: "AI HTS Classification",
+    desc: "Natural language to 10-digit HTS code in seconds using GLM 5.1",
+  },
+  {
+    icon: Shield,
+    title: "Full Duty Stack",
+    desc: "MFN + Section 301 + 232 + AD/CVD + MPF + HMF — all layers, zero gaps",
+  },
+  {
+    icon: Globe2,
+    title: "Country Comparison",
+    desc: "See total landed cost from 8 countries side-by-side instantly",
+  },
+  {
+    icon: TrendingDown,
+    title: "FTA Savings",
+    desc: "Find preferential rates from 20 US trade agreement partners",
+  },
+];
+
+export default function LandingPage() {
+  const router = useRouter();
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="min-h-screen bg-gradient-to-br from-[#1E3A5F] via-[#1E40AF] to-slate-900 text-white">
+      {/* Nav */}
+      <nav className="flex items-center justify-between px-8 py-5 max-w-7xl mx-auto">
+        <div className="flex items-center gap-2">
+          <Shield className="w-6 h-6 text-blue-400" />
+          <span className="text-xl font-bold">TariffPilot AI</span>
+        </div>
+        <Button
+          variant="outline"
+          className="border-white/20 text-white hover:bg-white/10"
+          onClick={() => router.push("/analyze")}
+        >
+          Try Free
+        </Button>
+      </nav>
+
+      {/* Hero */}
+      <section className="max-w-7xl mx-auto px-8 pt-20 pb-16 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-sm mb-6">
+            <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+            Powered by GLM 5.1 — Z.AI&apos;s agent-first model
+          </div>
+
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
+            Stop Overpaying on
+            <span className="block text-blue-400">Import Duties</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+          <p className="text-xl text-slate-300 max-w-2xl mx-auto mb-10">
+            AI agent that classifies any product under the correct HTS code,
+            stacks every US duty layer, and finds you FTA savings — in under 60
+            seconds.
           </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              size="lg"
+              className="bg-blue-500 hover:bg-blue-400 text-white px-8 py-4 text-lg"
+              onClick={() => router.push("/analyze")}
+            >
+              Analyze Your Product Free
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* Stats row */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20">
+          {STATS.map((s, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 + i * 0.1 }}
+              className="bg-white/5 border border-white/10 rounded-xl p-5"
+            >
+              <div className="text-3xl font-bold text-blue-400">{s.value}</div>
+              <div className="text-sm text-slate-400 mt-1">{s.label}</div>
+            </motion.div>
+          ))}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* Features */}
+      <section className="max-w-7xl mx-auto px-8 pb-24">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {FEATURES.map((f, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 + i * 0.1 }}
+              className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-colors"
+            >
+              <f.icon className="w-8 h-8 text-blue-400 mb-3" />
+              <h3 className="font-semibold text-lg mb-2">{f.title}</h3>
+              <p className="text-slate-400 text-sm">{f.desc}</p>
+            </motion.div>
+          ))}
         </div>
-      </main>
-    </div>
+      </section>
+    </main>
   );
 }
