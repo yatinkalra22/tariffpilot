@@ -21,26 +21,27 @@ TariffPilot uses the **GLM 5.1** large language model via the Z.AI platform. Thi
 
 ### Steps to get your key
 
-1. Go to [https://open.bigmodel.cn](https://open.bigmodel.cn)
-2. Click **Register** (or **Sign Up**) in the top right
-3. Create an account using your email or phone number
-4. After registration, verify your email/phone
-5. Log in to the dashboard
-6. Navigate to **API Keys** in the left sidebar (or go to [https://open.bigmodel.cn/usercenter/apikeys](https://open.bigmodel.cn/usercenter/apikeys))
-7. Click **Create API Key**
-8. Copy the generated key — it starts with a long alphanumeric string
+1. Go to [https://z.ai](https://z.ai) and create an account
+2. After registration, verify your email
+3. Navigate to **API Keys** at [https://z.ai/manage-apikey/apikey-list](https://z.ai/manage-apikey/apikey-list)
+4. Click **Create API Key**
+5. Copy the generated key
+
+### For hackathon participants (Build with GLM 5.1 Challenge)
+
+1. Apply for free GLM 5.1 API access + credits via the **API Access Form** in the Builder Guide
+2. Join the [AI Valley Discord](https://discord.gg/aivalley) and like the message in **#event-access** to unlock access
+3. Credits are distributed to your Z.AI account after approval
 
 ### Important notes
 
-- The Z.AI platform is by **Zhipu AI** (智谱AI), the company behind GLM models
-- New accounts typically get **free credits** for testing
 - The API is OpenAI-compatible — TariffPilot uses the OpenAI SDK pointed at `https://api.z.ai/api/paas/v4/`
-- The model used is `glm-5-1` (configurable via `GLM_MODEL` env var)
+- The model used is `glm-5.1` (configurable via `GLM_MODEL` env var)
 - Keep your API key secret — never commit it to git
 
 ### Pricing
 
-- Check current pricing at [https://open.bigmodel.cn/pricing](https://open.bigmodel.cn/pricing)
+- Check current pricing at [https://z.ai](https://z.ai)
 - GLM 5.1 is billed per token (input + output)
 - A typical TariffPilot analysis uses ~5,000-10,000 tokens across all 5 steps
 
