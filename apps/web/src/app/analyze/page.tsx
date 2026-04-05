@@ -220,7 +220,7 @@ export default function AnalyzePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <AgentProgress events={events} analysisId={analysisId} />
+              <AgentProgress events={events} analysisId={analysisId} onRetry={() => { setIsRunning(false); setEvents([]); setAnalysisId(null); }} />
             </motion.div>
           )}
         </AnimatePresence>

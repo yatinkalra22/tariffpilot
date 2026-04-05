@@ -9,6 +9,7 @@ import {
   Globe,
   TrendingDown,
   FileText,
+  AlertCircle,
 } from "lucide-react";
 import type { SseEvent } from "@/lib/types";
 
@@ -48,9 +49,10 @@ const STEPS = [
 interface Props {
   events: SseEvent[];
   analysisId: string | null;
+  onRetry?: () => void;
 }
 
-export function AgentProgress({ events, analysisId }: Props) {
+export function AgentProgress({ events, analysisId, onRetry }: Props) {
   const completedSteps = new Set(
     events.filter((e) => e.type === "step_complete").map((e) => e.step)
   );
@@ -60,6 +62,8 @@ export function AgentProgress({ events, analysisId }: Props) {
       .map((e) => e.step)
       .filter((s) => !completedSteps.has(s))
   );
+  const errorEvent = events.find((e) => e.type === "error");
+  const hasError = !!errorEvent;
   const latestMessage =
     events[events.length - 1]?.message ?? "Starting analysis...";
   const isComplete = !!analysisId;
@@ -69,21 +73,25 @@ export function AgentProgress({ events, analysisId }: Props) {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h2 className="text-xl font-bold text-[#1E3A5F]">
-            AI Analysis Running
+            {hasError ? "Analysis Failed" : isComplete ? "Analysis Complete" : "AI Analysis Running"}
           </h2>
-          <p className="text-sm text-slate-500 mt-1">{latestMessage}</p>
+          <p className={`text-sm mt-1 ${hasError ? "text-red-500" : "text-slate-500"}`}>{latestMessage}</p>
         </div>
-        {!isComplete && (
+        {hasError ? (
+          <AlertCircle className="w-6 h-6 text-red-500" />
+        ) : isComplete ? (
+          <Check className="w-6 h-6 text-emerald-500" />
+        ) : (
           <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
         )}
-        {isComplete && <Check className="w-6 h-6 text-emerald-500" />}
       </div>
 
       <div className="space-y-4">
         {STEPS.map((step, i) => {
           const isDone = completedSteps.has(step.id as 1 | 2 | 3 | 4 | 5);
-          const isActive = activeSteps.has(step.id as 1 | 2 | 3 | 4 | 5);
-          const isPending = !isDone && !isActive;
+          const isActive = !hasError && activeSteps.has(step.id as 1 | 2 | 3 | 4 | 5);
+          const isFailed = hasError && errorEvent?.step === step.id;
+          const isPending = !isDone && !isActive && !isFailed;
 
           return (
             <motion.div
@@ -92,25 +100,31 @@ export function AgentProgress({ events, analysisId }: Props) {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.1 }}
               className={`flex items-start gap-4 p-4 rounded-xl transition-colors ${
-                isActive
-                  ? "bg-blue-50 border border-blue-200"
-                  : isDone
-                    ? "bg-emerald-50 border border-emerald-200"
-                    : "bg-slate-50 border border-transparent"
+                isFailed
+                  ? "bg-red-50 border border-red-200"
+                  : isActive
+                    ? "bg-blue-50 border border-blue-200"
+                    : isDone
+                      ? "bg-emerald-50 border border-emerald-200"
+                      : "bg-slate-50 border border-transparent"
               }`}
             >
               <motion.div
                 animate={isActive ? { scale: [1, 1.1, 1] } : {}}
                 transition={{ repeat: Infinity, duration: 1.5 }}
                 className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-                  isDone
-                    ? "bg-emerald-500 text-white"
-                    : isActive
-                      ? "bg-blue-500 text-white"
-                      : "bg-slate-200 text-slate-400"
+                  isFailed
+                    ? "bg-red-500 text-white"
+                    : isDone
+                      ? "bg-emerald-500 text-white"
+                      : isActive
+                        ? "bg-blue-500 text-white"
+                        : "bg-slate-200 text-slate-400"
                 }`}
               >
-                {isDone ? (
+                {isFailed ? (
+                  <AlertCircle className="w-5 h-5" />
+                ) : isDone ? (
                   <Check className="w-5 h-5" />
                 ) : isActive ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -123,11 +137,13 @@ export function AgentProgress({ events, analysisId }: Props) {
                 <div className="flex items-center justify-between">
                   <span
                     className={`font-semibold text-sm ${
-                      isDone
-                        ? "text-emerald-700"
-                        : isActive
-                          ? "text-blue-700"
-                          : "text-slate-400"
+                      isFailed
+                        ? "text-red-700"
+                        : isDone
+                          ? "text-emerald-700"
+                          : isActive
+                            ? "text-blue-700"
+                            : "text-slate-400"
                     }`}
                   >
                     Step {step.id}: {step.label}
@@ -172,6 +188,29 @@ export function AgentProgress({ events, analysisId }: Props) {
           );
         })}
       </div>
+
+      {hasError && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl text-center"
+        >
+          <p className="text-red-700 font-semibold mb-2">
+            {errorEvent?.message || "Something went wrong"}
+          </p>
+          <p className="text-red-500 text-xs mb-3">
+            {errorEvent?.error || "Please check your API key and try again."}
+          </p>
+          {onRetry && (
+            <button
+              onClick={onRetry}
+              className="px-4 py-2 bg-[#1E3A5F] text-white rounded-lg text-sm font-medium hover:bg-[#2a4f7a] transition-colors"
+            >
+              Try Again
+            </button>
+          )}
+        </motion.div>
+      )}
 
       {isComplete && (
         <motion.div
