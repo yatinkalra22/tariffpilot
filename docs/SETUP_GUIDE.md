@@ -127,17 +127,17 @@ GLM_MODEL=glm-5-1
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/tariffpilot
 
 # CORS — must match your frontend URL
-CORS_ORIGIN=http://localhost:3001
+CORS_ORIGIN=http://localhost:3000
 
 # Server port
-PORT=3000
+PORT=3001
 ```
 
 ### Frontend (`apps/web/.env.local`)
 
 ```bash
 # Create the file
-echo "NEXT_PUBLIC_API_URL=http://localhost:3000" > apps/web/.env.local
+echo "NEXT_PUBLIC_API_URL=http://localhost:3001" > apps/web/.env.local
 ```
 
 For production, set this to your deployed backend URL (e.g., `https://your-app.railway.app`).
@@ -209,8 +209,8 @@ Railway provides a free tier with $5/month credit for hobby projects.
 ### CORS errors in browser
 
 - Ensure `CORS_ORIGIN` in backend `.env` matches your frontend URL exactly
-- Include the protocol: `http://localhost:3001` not `localhost:3001`
-- No trailing slash: `http://localhost:3001` not `http://localhost:3001/`
+- Include the protocol: `http://localhost:3000` not `localhost:3000`
+- No trailing slash: `http://localhost:3000` not `http://localhost:3000/`
 
 ### Prisma migration fails
 
@@ -221,7 +221,7 @@ Railway provides a free tier with $5/month credit for hobby projects.
 ### Frontend can't reach backend
 
 - Verify `NEXT_PUBLIC_API_URL` points to the correct backend URL
-- Check the backend is running: `curl http://localhost:3000/health`
+- Check the backend is running: `curl http://localhost:3001/health`
 - For production, ensure Railway service is deployed and healthy
 
 ---
@@ -233,6 +233,6 @@ Railway provides a free tier with $5/month credit for hobby projects.
 | `ZAI_API_KEY` | Backend `.env` | Yes | [Z.AI Dashboard](https://open.bigmodel.cn/usercenter/apikeys) |
 | `GLM_MODEL` | Backend `.env` | No (default: `glm-5`) | Set to `glm-5-1` |
 | `DATABASE_URL` | Backend `.env` | Yes | Local PostgreSQL or Railway |
-| `CORS_ORIGIN` | Backend `.env` | No (default: `localhost:3001`) | Your frontend URL |
-| `PORT` | Backend `.env` | No (default: `3000`) | Any available port |
+| `CORS_ORIGIN` | Backend `.env` | No (default: `localhost:3000`) | Your frontend URL |
+| `PORT` | Backend `.env` | No (default: `3001`) | Any available port |
 | `NEXT_PUBLIC_API_URL` | Frontend `.env.local` | Yes | Your backend URL |

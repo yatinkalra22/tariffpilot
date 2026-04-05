@@ -89,14 +89,14 @@ Edit `apps/api/.env`:
 ZAI_API_KEY=your_zai_api_key
 GLM_MODEL=glm-5-1
 DATABASE_URL=postgresql://user:pass@localhost:5432/tariffpilot
-CORS_ORIGIN=http://localhost:3001
-PORT=3000
+CORS_ORIGIN=http://localhost:3000
+PORT=3001
 ```
 
 **Frontend** — create the web environment file:
 
 ```bash
-echo "NEXT_PUBLIC_API_URL=http://localhost:3000" > apps/web/.env.local
+echo "NEXT_PUBLIC_API_URL=http://localhost:3001" > apps/web/.env.local
 ```
 
 ### Database Setup
@@ -119,9 +119,9 @@ pnpm dev
 
 | Service | URL |
 |---------|-----|
-| Frontend | http://localhost:3001 |
-| Backend API | http://localhost:3000 |
-| Health Check | http://localhost:3000/health |
+| Frontend | http://localhost:3000 |
+| Backend API | http://localhost:3001 |
+| Health Check | http://localhost:3001/health |
 
 ### Build
 

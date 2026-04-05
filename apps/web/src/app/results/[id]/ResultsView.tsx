@@ -18,7 +18,7 @@ export function ResultsView({ analysis }: Props) {
   const countries = analysis.result?.countryComparisons;
   const report = analysis.result?.report;
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
   return (
     <div className="min-h-screen bg-slate-50">
