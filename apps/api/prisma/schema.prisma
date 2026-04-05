@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Seeded from USITC bulk download
+model HtsCode {
+  id              String   @id @default(cuid())
+  code            String   @unique  // e.g. "8518.30.20"
+  description     String
+  chapter         Int
+  heading         String
+  subheading      String
+  mfnRate         Decimal? // General (MFN) rate as decimal
+  mfnRateText     String?  // Raw text e.g. "3.9%" or "Free" or "6.5¢/kg"
+  unit            String?  // e.g. "%" or "¢/kg"
+  specialRates    Json?    // { CA: "Free", MX: "Free", KR: "Free" }
+  section301List  String?  // "List1" | "List2" | "List3" | "List4A" | null
+  section301Rate  Decimal?
+  section232      Boolean  @default(false)
+  section232Rate  Decimal?
+  adcvdOrders     Json?    // Active AD/CVD orders by country
+  updatedAt       DateTime @updatedAt
+  createdAt       DateTime @default(now())
+
+  @@index([chapter])
+  @@index([heading])
+  @@index([section301List])
+}
+
+// User analysis sessions
+model Analysis {
+  id              String         @id @default(cuid())
+  sessionId       String         // Anonymous session ID (no auth for hackathon)
+  productDesc     String
+  originCountry   String         @default("CN")
+  cifValue        Decimal        @default(10000)
+  status          AnalysisStatus @default(PENDING)
+  result          Json?          // Full structured result from Step 5
+  htsCode         String?
+  totalDutyRate   Decimal?
+  totalDutyAmount Decimal?
+  executionMs     Int?
+  errorMessage    String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([sessionId])
+  @@index([htsCode])
+}
+
+// AD/CVD active orders
+model AdcvdOrder {
+  id              String  @id @default(cuid())
+  caseNumber      String
+  country         String
+  product         String
+  htsCodePattern  String  // Can be prefix e.g. "7208"
+  dutyType        String  // "AD" | "CVD"
+  estimatedRate   String  // e.g. "25.4%" or "varies"
+  active          Boolean @default(true)
+
+  @@index([country])
+  @@index([htsCodePattern])
+}
+
+enum AnalysisStatus {
+  PENDING
+  CLASSIFYING
+  CALCULATING
+  COMPARING
+  COMPLETE
+  FAILED
+}
