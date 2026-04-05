@@ -55,6 +55,8 @@ tariffpilot/
 
 ## Getting Started
 
+> **Need help getting API keys?** See the full [Setup Guide](docs/SETUP_GUIDE.md) for step-by-step instructions on obtaining every key and credential.
+
 ### Prerequisites
 
 - **Node.js** >= 22
